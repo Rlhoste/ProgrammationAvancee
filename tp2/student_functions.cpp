@@ -66,7 +66,7 @@ double computeComponentDiameter(const std::vector<PixelCoord>& pixels) {
 
     // TODO: Convert the best squared distance into the true Euclidean distance.
     return 0.0;
-
+}
 double computeLargestComponentDiameter(const Image8& mask) {
     // This function scans the whole mask, extracts each connected component,
     // computes its exact diameter, and keeps the largest diameter found.
@@ -122,7 +122,7 @@ double computeIoU(const Image8& mask1, const Image8& mask2) {
     }
  
     // TODO: Compute the Union.
-
+    int unionCount = 0;
     if (unionCount == 0) {
         return 1.0;
     }
