@@ -57,6 +57,7 @@ int main(int argc, char* argv[]) {
     }
 
     Image8 mask = thresholdDepth(depth, threshold);
+    //saveImage(mask, "mask_thresh.png");
     mask = openMask(mask);
     mask = closeMask(mask);
     Image8 croppedMask = cropMask(
