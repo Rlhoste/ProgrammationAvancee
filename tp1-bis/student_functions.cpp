@@ -26,7 +26,7 @@ Image8 thresholdDepth(const DepthImage& depth, uint16_t threshold) {
     result.width = depth.width;
     result.height = depth.height;
     result.data.resize(depth.data.size(), 0);
-
+    //TODO loop on each pixel
     return result;
 }
 
