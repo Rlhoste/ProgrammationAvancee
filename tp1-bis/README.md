@@ -20,11 +20,11 @@ Le chemin par défaut de l'image est défini dans `student_config.h`.
 ## Travail demandé
 Vous devez compléter les fonctions dans `student_functions.cpp`.
 
-### 1. Prétraitement de la profondeur
-Vous commencerez par compléter `normalizeDepth` et `invertDepth` afin de transformer correctement l'image de profondeur.
-
-### 2. Construction du masque
+### 1. Construction du masque
 Vous compléterez ensuite `thresholdDepth` pour créer le masque binaire, puis `erodeMask`, `dilateMask`, `openMask` et `closeMask` pour nettoyer ce masque.
+
+### 2. Prétraitement de la profondeur
+Vous commencerez par compléter `normalizeDepth` et `invertDepth` afin de transformer correctement l'image de profondeur.
 
 ### 3. Application du masque et recadrage
 Enfin, vous compléterez maskDepth, cropMask et cropDepth pour conserver les pixels dont le masque vaut 255, puis recadrer le masque et l’image de profondeur obtenus.
