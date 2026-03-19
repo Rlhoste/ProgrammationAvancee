@@ -35,7 +35,7 @@ Image8 erodeMask(const Image8& mask) {
     result.width = mask.width;
     result.height = mask.height;
     result.data.resize(mask.data.size(), 0);
-
+    //TODO loop to erode one time
     return result;
 }
 
@@ -44,6 +44,7 @@ Image8 dilateMask(const Image8& mask) {
     result.width = mask.width;
     result.height = mask.height;
     result.data.resize(mask.data.size(), 0);
+    //TODO loop to dilate one time
 
     return result;
 }
