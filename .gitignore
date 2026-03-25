@@ -33,3 +33,7 @@ solution/
 # Common generated data files
 *.bin
 *.txt
+
+# Python caches and local build folders
+__pycache__/
+build/
