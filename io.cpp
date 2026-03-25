@@ -56,6 +56,30 @@ bool hasPngExtension(const std::string& path) {
     return extension == ".png";
 }
 
+bool readFileHeader(const std::string& path, std::vector<uint8_t>& header, size_t maxBytes) {
+    header.clear();
+
+    std::ifstream file(path, std::ios::binary);
+    if (!file) {
+        return false;
+    }
+
+    header.resize(maxBytes, 0);
+    file.read(reinterpret_cast<char*>(header.data()), static_cast<std::streamsize>(maxBytes));
+    header.resize(static_cast<size_t>(file.gcount()));
+    return !header.empty();
+}
+
+bool isBmpSignature(const std::vector<uint8_t>& header) {
+    return header.size() >= 2 && header[0] == 'B' && header[1] == 'M';
+}
+
+bool isPngSignature(const std::vector<uint8_t>& header) {
+    static const uint8_t pngSignature[8] = {0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A};
+    return header.size() >= sizeof(pngSignature) &&
+           std::equal(std::begin(pngSignature), std::end(pngSignature), header.begin());
+}
+
 uint16_t readU16(const std::vector<uint8_t>& bytes, size_t offset, bool littleEndian) {
     if (littleEndian) {
         return static_cast<uint16_t>(bytes[offset]) |
@@ -243,17 +267,29 @@ std::wstring utf8ToWide(const std::string& text) {
         return std::wstring();
     }
 
-    const int size = MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, nullptr, 0);
-    if (size <= 0) {
-        return std::wstring(text.begin(), text.end());
+    const int utf8Size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                             text.c_str(), -1, nullptr, 0);
+    if (utf8Size > 0) {
+        std::wstring wide(static_cast<size_t>(utf8Size), L'\0');
+        MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.c_str(), -1,
+                            wide.data(), utf8Size);
+        if (!wide.empty() && wide.back() == L'\0') {
+            wide.pop_back();
+        }
+        return wide;
     }
 
-    std::wstring wide(static_cast<size_t>(size), L'\0');
-    MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, wide.data(), size);
-    if (!wide.empty() && wide.back() == L'\0') {
-        wide.pop_back();
+    const int ansiSize = MultiByteToWideChar(CP_ACP, 0, text.c_str(), -1, nullptr, 0);
+    if (ansiSize > 0) {
+        std::wstring wide(static_cast<size_t>(ansiSize), L'\0');
+        MultiByteToWideChar(CP_ACP, 0, text.c_str(), -1, wide.data(), ansiSize);
+        if (!wide.empty() && wide.back() == L'\0') {
+            wide.pop_back();
+        }
+        return wide;
     }
-    return wide;
+
+    return std::wstring(text.begin(), text.end());
 }
 
 bool ensureGdiplusStarted() {
@@ -276,8 +312,10 @@ Image8 loadImagePNGWindows(const std::string& path) {
 
     const std::wstring widePath = utf8ToWide(path);
     Gdiplus::Bitmap bitmap(widePath.c_str());
-    if (bitmap.GetLastStatus() != Gdiplus::Ok) {
-        std::cerr << "Erreur : impossible d'ouvrir l'image PNG " << path << std::endl;
+    const Gdiplus::Status status = bitmap.GetLastStatus();
+    if (status != Gdiplus::Ok) {
+        std::cerr << "Erreur : impossible d'ouvrir l'image PNG " << path
+                  << " (GDI+ status=" << static_cast<int>(status) << ")" << std::endl;
         return {0, 0, {}};
     }
 
@@ -495,12 +533,27 @@ DepthImage loadDepth(const std::string& path) {
 }
 
 Image8 loadImage(const std::string& path) {
+    std::vector<uint8_t> header;
+    if (readFileHeader(path, header, 8)) {
+        if (isBmpSignature(header)) {
+            return loadImageBMPInternal(path);
+        }
+
+#ifdef _WIN32
+        if (isPngSignature(header)) {
+            return loadImagePNGWindows(path);
+        }
+#endif
+    }
+
     if (hasBmpExtension(path)) {
         return loadImageBMPInternal(path);
     }
 
 #ifdef _WIN32
     if (hasPngExtension(path)) {
+        std::cerr << "Avertissement : extension PNG detectee mais signature invalide, tentative via GDI+ "
+                  << path << std::endl;
         return loadImagePNGWindows(path);
     }
 #endif
