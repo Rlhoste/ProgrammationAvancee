@@ -89,11 +89,13 @@ Le fichier `mask_final_crop.txt` contient :
 ## Compilation
 Depuis le dossier `tp1-bis` :
 
+Sous Linux :
+
 ```bash
 g++ -std=c++17 -O2 -o tp1_bis tp1.cpp student_functions.cpp ../io.cpp
 ```
 
-Sous Windows :
+Sous Windows (Powershell) :
 
 ```bash
 g++ -std=c++17 -O2 -o tp1_bis.exe tp1.cpp student_functions.cpp ../io.cpp -lgdiplus
