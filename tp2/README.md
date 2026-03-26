@@ -44,12 +44,18 @@ Vous étudierez ensuite la structure des deux masques. Il faut d'abord compter l
 Pour calculer le diamètre, vous devrez aussi extraire les pixels d'une composante connexe avec `extractComponentPixels`. À partir d'un pixel blanc non visité, cette fonction doit récupérer tous les pixels de la composante et stocker leurs coordonnées `(x, y)`.
 
 ### 4. Accélérer ce calcul avec CUDA
-La dernière étape consiste à compléter `cudaComputeLargestComponentDiameter` dans `student_functions.cu`.
+La dernière étape consiste à compléter la partie CUDA dans `student_functions.cu`, ainsi que la version C++ de référence dans `student_functions.cpp`.
 
-L'extraction des composantes reste sur le CPU. En revanche, la partie la plus coûteuse, la comparaison brute force de toutes les paires de pixels d'une composante, doit être accélérée avec CUDA. Le diamètre C++ est déjà présent dans le projet comme référence de comparaison pour vérifier le résultat et mesurer le gain de temps. L'idée est la suivante :
+L'extraction des composantes reste sur le CPU. En revanche, la partie la plus coûteuse, la comparaison brute force de toutes les paires de pixels d'une composante, doit être accélérée avec CUDA. Dans le starter actuel, le diamètre C++ et le diamètre CUDA sont tous les deux à compléter. L'idée côté CUDA est la suivante :
 - un thread CUDA traite une paire de pixels ;
 - il calcule une distance au carré ;
 - il essaye de mettre à jour le maximum avec `atomicMax`.
+
+Concrètement, dans `student_functions.cu`, il faut :
+- compléter le kernel `kernelComponentDiameter` ;
+- calculer `totalPairs`, `blockSize` et `gridSize` ;
+- lancer correctement le kernel ;
+- conserver `cudaComputeLargestComponentDiameter` comme parcours global des composantes.
 
 ## Ce que le programme doit afficher
 Le programme doit afficher :
@@ -58,8 +64,12 @@ Le programme doit afficher :
 - `union` ;
 - le nombre de composantes connexes dans la prédiction ;
 - le nombre de composantes connexes dans la vérité terrain ;
-- le diamètre maximal en C++ ;
-- le diamètre maximal en CUDA ;
+- la différence du nombre de composantes connexes ;
+- le diamètre maximal de la prédiction en C++ ;
+- le diamètre maximal de la vérité terrain en C++ ;
+- le diamètre maximal de la prédiction en CUDA ;
+- le diamètre maximal de la vérité terrain en CUDA ;
+- la différence de diamètre maximal ;
 - l'IoU ;
 - le score simple ;
 - le temps du diamètre en C++ ;
@@ -96,7 +106,7 @@ Le masque prédit utilisé ici est celui produit par `TP1-bis`. Dans l'état act
 - les dimensions du masque reconstruit doivent correspondre à celles de la vérité terrain ;
 - les valeurs de `overlap`, `union` et `IoU` doivent être cohérentes ;
 - le nombre de composantes connexes doit être plausible ;
-- le diamètre maximal en CUDA doit être identique au diamètre maximal en C++ ;
+- le diamètre maximal en CUDA doit être identique au diamètre maximal en C++ pour un même masque ;
 - le temps du diamètre en CUDA doit être plus faible que le temps du diamètre en C++ sur une image réelle.
 
 ## Fichiers
