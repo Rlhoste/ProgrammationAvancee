@@ -54,6 +54,14 @@ La fonction Python doit :
 - appeler `largestComponentDiameterBuffer` ;
 - retourner un `float`.
 
+### 3. Exposer les fonctions dans le module Python
+Completez aussi le bloc `PYBIND11_MODULE(...)`.
+
+Ici, le travail est plus court :
+- reprendre la logique deja vue en partie 1 avec `m.def(...)` ;
+- exposer `threshold_depth(...)` ;
+- exposer `largest_component_diameter(...)`.
+
 ## Structure
 - `tp4_pybind_cuda/student_functions.h` : declarations C++ ;
 - `tp4_pybind_cuda/student_functions.cu` : implementation CUDA fournie ;

@@ -31,7 +31,6 @@ normalize(depth: torch.Tensor) -> torch.Tensor
 `normalize(...)` reutilise ensuite les memes idees sur un cas un peu plus riche.
 
 ## Fichiers a modifier
-- `tp4_torch_cpu/student_binding.cpp`
 - `tp4_torch_cpu/student_functions.cpp`
 - `module/setup.py`
 
@@ -41,7 +40,9 @@ Vous devez surtout comprendre deux niveaux :
 - `threshold(...)` : exemple simple deja fourni pour apprendre l'API `torch::Tensor` ;
 - `normalize(...)` : exercice principal de la partie.
 
-La fonction a exposer et a completer ici reste :
+Le binding Python `threshold(...)` / `normalize(...)` est deja fourni.
+
+La fonction principale a completer ici reste :
 
 ```python
 normalize(depth: torch.Tensor) -> torch.Tensor
@@ -53,7 +54,6 @@ Le tenseur d'entree :
 - est sur CPU.
 
 La fonction doit :
-- verifier que le tenseur est sur CPU ;
 - effectuer la normalisation cote C++ ;
 - renvoyer un nouveau tenseur `torch.float32` normalise.
 
@@ -87,6 +87,10 @@ commencez par lire `threshold_cpu(...)` dans `student_functions.cpp` :
 - la lecture des dimensions ;
 - l'utilisation de `accessor<...>()` ;
 - l'ecriture dans un tenseur de sortie.
+
+Le vrai travail restant est donc surtout :
+- completer `normalize_cpu(...)` dans `student_functions.cpp` ;
+- comprendre comment `module/setup.py` declare une extension PyTorch CPU.
 
 ## Structure
 - `tp4_torch_cpu/student_binding.cpp`
