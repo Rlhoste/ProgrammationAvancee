@@ -2,10 +2,6 @@ import os
 import sys
 from pathlib import Path
 
-MODULE_ROOT = Path(__file__).resolve().parent / "module"
-if str(MODULE_ROOT) not in sys.path:
-    sys.path.insert(0, str(MODULE_ROOT))
-
 def configure_cuda_runtime():
     # Sous Windows, un module Python natif peut dependre de DLL CUDA.
     # Si `CUDA_PATH` est defini, on ajoute automatiquement son dossier `bin`
@@ -24,8 +20,15 @@ def configure_cuda_runtime():
 
 configure_cuda_runtime()
 
-# Test de l'extension native `mini_pybind`.
-from mini_pybind import add_ints_cpp, add_ints_cuda
+try:
+    # Prefere le package installe dans l'environnement Python courant.
+    from mini_pybind import add_ints_cpp, add_ints_cuda
+except ModuleNotFoundError:
+    # Fallback pratique pour un lancement sans installation prealable.
+    MODULE_ROOT = Path(__file__).resolve().parent / "module"
+    if str(MODULE_ROOT) not in sys.path:
+        sys.path.insert(0, str(MODULE_ROOT))
+    from mini_pybind import add_ints_cpp, add_ints_cuda
 
 
 print("C++  4 + 7 =", add_ints_cpp(4, 7))
