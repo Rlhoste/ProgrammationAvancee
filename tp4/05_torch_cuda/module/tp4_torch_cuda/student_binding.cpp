@@ -3,10 +3,7 @@
 #include <stdexcept>
 
 torch::Tensor normalize(torch::Tensor input) {
-    // TODO:
-    // 1. verifier que le tenseur est sur CUDA ;
-    // 2. verifier qu'il est 2D ;
-    // 3. appeler normalize_cuda(input).
+
     if (!input.is_cuda()) {
         throw std::runtime_error("normalize expects a CUDA tensor");
     }

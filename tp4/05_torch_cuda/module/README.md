@@ -17,7 +17,6 @@ Le but est de reconstruire vous-memes une plus grande partie de la chaine
 qu'en partie 4 CPU.
 
 ## Fichiers a modifier
-- `tp4_torch_cuda/student_binding.cpp`
 - `tp4_torch_cuda/student_functions.cu`
 - `module/setup.py`
 
@@ -34,18 +33,22 @@ Le tenseur d'entree :
 - est deja sur le GPU.
 
 La fonction doit :
-- verifier que le tenseur est CUDA ;
 - lancer un kernel CUDA ;
 - renvoyer un nouveau tenseur `torch.float32` normalise.
 
 Par rapport a la partie 4 CPU, cette partie est moins guidee.
 Le but est que vous reconstruisiez vous-memes une plus grande partie de la chaine :
-- verification des entrees ;
 - choix des conversions utiles ;
 - allocation de la sortie ;
 - lancement du kernel ;
 - retour du resultat ;
 - declaration correcte du build dans `setup.py`.
+
+Le binding Python `normalize(...)` est deja fourni.
+
+Le vrai travail restant porte surtout sur :
+- `normalize_cuda(...)` dans `student_functions.cu` ;
+- la declaration correcte de l'extension CUDA dans `module/setup.py`.
 
 On peut reprendre la normalisation du `TP1` :
 
