@@ -4,10 +4,6 @@ from pathlib import Path
 
 import numpy as np
 
-MODULE_ROOT = Path(__file__).resolve().parent / "module"
-if str(MODULE_ROOT) not in sys.path:
-    sys.path.insert(0, str(MODULE_ROOT))
-
 # Sous Windows, les modules natifs peuvent dependre des DLL CUDA.
 def configure_cuda_runtime():
     if os.name != "nt" or not hasattr(os, "add_dll_directory"):
@@ -24,7 +20,13 @@ def configure_cuda_runtime():
 
 configure_cuda_runtime()
 
-from tp4_pybind_cuda import largest_component_diameter, threshold_depth
+try:
+    from tp4_pybind_cuda import largest_component_diameter, threshold_depth
+except ModuleNotFoundError:
+    MODULE_ROOT = Path(__file__).resolve().parent / "module"
+    if str(MODULE_ROOT) not in sys.path:
+        sys.path.insert(0, str(MODULE_ROOT))
+    from tp4_pybind_cuda import largest_component_diameter, threshold_depth
 
 
 def main() -> int:

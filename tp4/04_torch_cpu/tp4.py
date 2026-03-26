@@ -3,11 +3,13 @@ from pathlib import Path
 
 import torch
 
-MODULE_ROOT = Path(__file__).resolve().parent / "module"
-if str(MODULE_ROOT) not in sys.path:
-    sys.path.insert(0, str(MODULE_ROOT))
-
-import tp4_torch_cpu
+try:
+    import tp4_torch_cpu
+except ModuleNotFoundError:
+    MODULE_ROOT = Path(__file__).resolve().parent / "module"
+    if str(MODULE_ROOT) not in sys.path:
+        sys.path.insert(0, str(MODULE_ROOT))
+    import tp4_torch_cpu
 
 
 def main() -> int:

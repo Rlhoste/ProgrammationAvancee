@@ -3,11 +3,13 @@ from pathlib import Path
 
 import numpy as np
 
-MODULE_ROOT = Path(__file__).resolve().parent / "module"
-if str(MODULE_ROOT) not in sys.path:
-    sys.path.insert(0, str(MODULE_ROOT))
-
-from tp4_ctypes_bridge import threshold_vector
+try:
+    from tp4_ctypes_bridge import threshold_vector
+except ModuleNotFoundError:
+    MODULE_ROOT = Path(__file__).resolve().parent / "module"
+    if str(MODULE_ROOT) not in sys.path:
+        sys.path.insert(0, str(MODULE_ROOT))
+    from tp4_ctypes_bridge import threshold_vector
 
 # Meme pont pedagogique qu'en pybind11, mais via `ctypes` :
 # un vecteur NumPy 1D est envoye a une bibliotheque native,
