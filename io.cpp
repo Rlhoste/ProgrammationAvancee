@@ -230,31 +230,62 @@ Image8 loadImageBMPInternal(const std::string& path) {
     const uint16_t bitsPerPixel = readU16(bytes, 28, true);
     const uint32_t compression = readU32(bytes, 30, true);
 
-    if (width <= 0 || height == 0 || planes != 1 || bitsPerPixel != 24 || compression != 0) {
+    if (width <= 0 || height == 0 || planes != 1 || (bitsPerPixel != 8 && bitsPerPixel != 24) || compression != 0) {
         std::cerr << "Erreur : format BMP non supporte " << path << std::endl;
         return {0, 0, {}};
     }
 
     const int absHeight = (height < 0) ? -height : height;
-    const uint32_t rowStride = static_cast<uint32_t>(width) * 3u;
-    const uint32_t paddedRowStride = (rowStride + 3u) & ~3u;
-    if (pixelOffset + static_cast<size_t>(paddedRowStride) * absHeight > bytes.size()) {
-        std::cerr << "Erreur : donnees BMP hors limites " << path << std::endl;
-        return {0, 0, {}};
-    }
-
     Image8 image;
     image.width = width;
     image.height = absHeight;
     image.data.resize(static_cast<size_t>(width) * absHeight, 0);
 
-    for (int y = 0; y < absHeight; ++y) {
-        const int srcY = (height > 0) ? (absHeight - 1 - y) : y;
-        const size_t rowOffset = pixelOffset + static_cast<size_t>(srcY) * paddedRowStride;
+    if (bitsPerPixel == 24) {
+        const uint32_t rowStride = static_cast<uint32_t>(width) * 3u;
+        const uint32_t paddedRowStride = (rowStride + 3u) & ~3u;
+        if (pixelOffset + static_cast<size_t>(paddedRowStride) * absHeight > bytes.size()) {
+            std::cerr << "Erreur : donnees BMP hors limites " << path << std::endl;
+            return {0, 0, {}};
+        }
 
-        for (int x = 0; x < width; ++x) {
-            const size_t pixelIndex = rowOffset + static_cast<size_t>(x) * 3;
-            image.data[static_cast<size_t>(y) * width + x] = bytes[pixelIndex];
+        for (int y = 0; y < absHeight; ++y) {
+            const int srcY = (height > 0) ? (absHeight - 1 - y) : y;
+            const size_t rowOffset = pixelOffset + static_cast<size_t>(srcY) * paddedRowStride;
+
+            for (int x = 0; x < width; ++x) {
+                const size_t pixelIndex = rowOffset + static_cast<size_t>(x) * 3;
+                image.data[static_cast<size_t>(y) * width + x] = bytes[pixelIndex + 2]; // Red channel
+            }
+        }
+    } else if (bitsPerPixel == 8) {
+        // 8-bit BMP with palette
+        const uint32_t paletteOffset = 54; // After 14-byte file header + 40-byte DIB header
+        const uint32_t rowStride = static_cast<uint32_t>(width);
+        const uint32_t paddedRowStride = (rowStride + 3u) & ~3u;
+        if (pixelOffset + static_cast<size_t>(paddedRowStride) * absHeight > bytes.size()) {
+            std::cerr << "Erreur : donnees BMP hors limites " << path << std::endl;
+            return {0, 0, {}};
+        }
+
+        // Read palette (256 entries, 4 bytes each: B, G, R, 0)
+        std::vector<uint8_t> palette(256 * 4);
+        if (paletteOffset + palette.size() > bytes.size()) {
+            std::cerr << "Erreur : palette BMP hors limites " << path << std::endl;
+            return {0, 0, {}};
+        }
+        std::copy(bytes.begin() + paletteOffset, bytes.begin() + paletteOffset + palette.size(), palette.begin());
+
+        for (int y = 0; y < absHeight; ++y) {
+            const int srcY = (height > 0) ? (absHeight - 1 - y) : y;
+            const size_t rowOffset = pixelOffset + static_cast<size_t>(srcY) * paddedRowStride;
+
+            for (int x = 0; x < width; ++x) {
+                const size_t pixelIndex = rowOffset + static_cast<size_t>(x);
+                const uint8_t paletteIndex = bytes[pixelIndex];
+                // Use red channel from palette
+                image.data[static_cast<size_t>(y) * width + x] = palette[paletteIndex * 4 + 2];
+            }
         }
     }
 
