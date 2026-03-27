@@ -92,10 +92,10 @@ int main(int argc, char* argv[]) {
     }
 
     saveDepth(flattened, "flattened_depth.bin");
-    saveImage(makeDepthPreview(flattened, true), "flattened_preview.png");
-    saveImage(seedMask, "region_seed_mask.png");
-    saveImage(refinedMask, "region_grown_mask.png");
-    saveImage(fullMask, "region_grown_full_mask.png");
+    saveImage(makeDepthPreview(flattened, true), "flattened_preview.bmp");
+    saveImage(seedMask, "region_seed_mask.bmp");
+    saveImage(refinedMask, "region_grown_mask.bmp");
+    saveImage(fullMask, "region_grown_full_mask.bmp");
 
     const int overlap = countOverlap(fullMask, gtMask);
     const int unionCount = countUnion(fullMask, gtMask);

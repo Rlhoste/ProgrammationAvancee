@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
         end = high_resolution_clock::now();
         duration = end - start;
         cout << ">>> Seuillage CPU: " << duration.count() << " ms" << endl;
-        saveImage(threshCpu, "thresholded_depth_cpu.png");
+        saveImage(threshCpu, "thresholded_depth_cpu.bmp");
     }
 
     if (mode == CUDA || mode == BOTH) {
@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
         end = high_resolution_clock::now();
         duration = end - start;
         cout << ">>> Seuillage CUDA: " << duration.count() << " ms" << endl;
-        saveImage(threshCuda, "thresholded_depth_cuda.png");
+        saveImage(threshCuda, "thresholded_depth_cuda.bmp");
 
         if (mode == BOTH) {
             allMatch = printComparisonSummary("seuillage", compareMaskImages(threshCpu, threshCuda)) && allMatch;

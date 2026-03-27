@@ -667,5 +667,9 @@ void saveImageBMP(const Image8& img, const std::string& path) {
 }
 
 void saveImage(const Image8& img, const std::string& path) {
+    if (!hasBmpExtension(path)) {
+        std::cerr << "Avertissement : saveImage ecrit un fichier BMP, utilisez de preference une extension .bmp : "
+                  << path << std::endl;
+    }
     saveImageBMP(img, path);
 }
