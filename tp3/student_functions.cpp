@@ -133,7 +133,30 @@ bool refinePlaneLeastSquares(const std::vector<Point3>& points, const std::vecto
 
     double system[3][4] = {{0.0}};
     double solution[3] = {0.0, 0.0, 0.0};
+    // Build the normal equations for z = alpha*x + beta*y + gamma
+    // over all inlier points, then solve for (alpha, beta, gamma).
+    for (size_t inlierIndex : inliers) {
+        const Point3& point = points[inlierIndex];
+        const double x = point.x;
+        const double y = point.y;
+        const double z = point.z;
 
+        system[0][0] += x * x;
+        system[0][1] += x * y;
+        system[0][2] += x;
+        system[0][3] += x * z;
+
+        system[1][0] += x * y;
+        system[1][1] += y * y;
+        system[1][2] += y;
+        system[1][3] += y * z;
+
+        system[2][0] += x;
+        system[2][1] += y;
+        system[2][2] += 1.0;
+        system[2][3] += z;
+    }
+    
     if (!solve3x3(system, solution)) {
         return false;
     }
