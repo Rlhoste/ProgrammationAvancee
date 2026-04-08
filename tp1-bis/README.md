@@ -1,4 +1,4 @@
-# TP1-bis : Suppression simple du fond à partir d'une carte de profondeur
+# TP1 : Suppression simple du fond à partir d'une carte de profondeur
 
 ## Objectif
 Dans ce TP, vous allez construire une petite chaîne de traitement d'image en C++ pour isoler le premier plan à partir d'une image de profondeur.
