@@ -1,5 +1,7 @@
 # Programmation Avancée - TP
-Par Lhoste Rémi (`remi.lhoste@o2game.com`)
+Par Lhoste Rémi (`remi.lhoste@o2game.com`)(`remi.lhoste@doctorant.uca.com`)
+
+A destination des 3ème années du BUT informatique au Puy-en-Velay.
 
 ## Ressources externes optionnelles
 ### Ouvrir les images
