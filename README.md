@@ -1,7 +1,7 @@
 # Programmation Avancée - TP
 Par Lhoste Rémi (`remi.lhoste@o2game.com`)
 
-## Ressources externes
+## Ressources externes optionnelles
 ### Ouvrir les images
 Pour visualiser les images de profondeur ou les masques, expérimenter avec les filtres, vous pouvez utiliser ImageJ :
 
